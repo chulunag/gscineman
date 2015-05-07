@@ -1,0 +1,43 @@
+@font-face {
+    font-family: "open_sanscondensed_light";
+    src: url("../fonts/OpenSans-CondLight-webfont.eot");
+    src: url("../fonts/OpenSans-CondLight-webfont.eot?#iefix") format("embedded-opentype"),
+         url("../fonts/OpenSans-CondLight-webfont.woff") format("woff"),
+         url("../fonts/OpenSans-CondLight-webfont.ttf") format("truetype"),
+         url("../fonts/OpenSans-CondLight-webfont.svg#open_sanscondensed_light") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "open_sans_condensedbold";
+    src: url("../fonts/OpenSans-CondBold-webfont.eot");
+    src: url("../fonts/OpenSans-CondBold-webfont.eot?#iefix") format("embedded-opentype"),
+         url("../fonts/OpenSans-CondBold-webfont.woff") format("woff"),
+         url("../fonts/OpenSans-CondBold-webfont.ttf") format("truetype"),
+         url("../fonts/OpenSans-CondBold-webfont.svg#open_sans_condensedbold") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+	font-family: "open_sanscondensed_light" !important;
+	font-size: 13pt !important;
+}
+
+#main-content {
+	margin-top: 10px;
+}
+
+#main-menu *{
+	font-family: "open_sans_condensedbold" !important;
+	color: SlateGray;
+}
+
+.panel-L {
+	background-size: 300px 400px;
+	background-image: radial-gradient(circle at top left, #dddddd, #ffffff 50%);
+	background-repeat: no-repeat;
+}
