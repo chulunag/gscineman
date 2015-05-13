@@ -1,4 +1,5 @@
 <?php
+
 include_once $_SERVER ['DOCUMENT_ROOT'] . '/modules/common/class-nosql-database.php';
 
 try {
@@ -7,6 +8,11 @@ try {
     exit(json_encode(['error' => true, 'error_msg' => $e->getMessage()]));
 }
 
-$post = $_POST ['post'];
+$docs = $db->nosql->gsdb->movies->find()->sort(['_id' => -1]);
 
-$db->nosql->gsdb->movies->insert($post);
+$items = [];
+foreach ($docs as $item) {
+    $items[] = $item;
+}
+
+echo json_encode(['items' => $items]);

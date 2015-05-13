@@ -1,4 +1,5 @@
 <?php
+
 include_once $_SERVER ['DOCUMENT_ROOT'] . '/modules/common/class-nosql-database.php';
 
 try {
@@ -8,5 +9,7 @@ try {
 }
 
 $post = $_POST ['post'];
+$_id = $post['_id']['$id'];
+unset($post['_id']);
 
-$db->nosql->gsdb->movies->insert($post);
+$db->nosql->gsdb->movies->update(['_id' => new MongoId($_id)], $post);

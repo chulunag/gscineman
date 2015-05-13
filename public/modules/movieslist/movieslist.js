@@ -1,23 +1,107 @@
 $(document).ready(
-		function() {
-			var post = {};
+        function () {
+            // var post = {};
 
-			var grid_movieslist_src = [];
+            var genres_src = {
+                datatype: "json",
+                url: "modules/common/genres-list.php", datafields: [{name: "name"}],
+                root: "items"
+            };
 
-			var genres_src = new $.jqx.dataAdapter({datatype : "json", datafields : [{name : "name"}], type : "post", url : "/modules/common/genres-list.php", root : "rows"});
-			var countries_src = new $.jqx.dataAdapter({datatype : "json", datafields : [{name : "name"}], type : "post", url : "/modules/common/countries-list.php", root : "rows"});
+            var studios_src = {
+                datatype: "json",
+                url: "modules/common/studios-list.php", datafields: [{name: "name"}],
+                root: "items"
+            };
 
-			//
-			$("#txt-inttitle").jqxInput({width : 198, height : 30, theme : _GLOBAL.theme});
-			$("#txt-title").jqxInput({width : 198, height : 30, theme : _GLOBAL.theme});
-			$("#txt-runtime").jqxInput({width : 198, height : 30, theme : _GLOBAL.theme});
-			$("#lst-genres").jqxDropDownList({source : genres_src, displayMember : "name", checkboxes : true, autoDropDownHeight : true, width : 198, height : 30, theme : _GLOBAL.theme});
-			$("#lst-countries").jqxDropDownList({source : countries_src, displayMember : "name", checkboxes : true, autoDropDownHeight : true, width : 198, height : 30, theme : _GLOBAL.theme});
-			$("#lst-language").jqxDropDownList({source : ["Vietnam", "English"], autoDropDownHeight : true, width : 198, height : 30, theme : _GLOBAL.theme});
-			$("#dtp-releasedate").jqxDateTimeInput({width : 198, height : 30, showCalendarButton : true, theme : _GLOBAL.theme});
-			$("#grid-movieslist").jqxGrid(
-					{
-						width : 900,
-						columns : [{text : "Int Title", datafield : "Int Title", width : 300, align : "center"}, {text : "Title", datafield : "Title", width : 300, align : "center"},
-								{text : "Runtime", datafield : "Runtime", width : 100, align : "center"}, {text : "Distributor", datafield : "Distributor", width : 180, align : "center"}], theme : _GLOBAL.theme});
-		});
+            var grid_movieslist_src = {
+                datatype: "json",
+                url: "modules/common/movies-list.php",
+                datafields: [{name: "_id"},
+                    {name: "IntTitle"}, {name: "Title"}, {name: "Runtime"},
+                    {name: "Studio"}, {name: "Genres"}, {name: "ReleaseDate", type: "date"}],
+                root: "items",
+                updaterow: function (rowid, rowdata, commit) {
+                    var post = {};
+                    post._id = rowdata._id;
+                    post.IntTitle = rowdata.IntTitle;
+                    post.Title = rowdata.Title;
+                    post.Runtime = rowdata.Runtime;
+                    post.Genres = rowdata.Genres;
+                    post.ReleaseDate = rowdata.ReleaseDate;
+                    post.Studio = rowdata.Studio;
+                    $.ajax({type: "post", url: "modules/movieslist/modify.php", data: {post: post}});
+                    commit(true);
+                }};
+
+            $("#grid-movieslist").jqxGrid(
+                    {
+                        source: grid_movieslist_src,
+                        width: 960,
+                        pageable: true,
+                        showstatusbar: true,
+                        renderstatusbar: function (s) {
+                            s.append("<div style=\"overflow:hidden;position:relative;margin:7px;color:#fff;background-color:DodgerBlue\">Status : ...</div>");
+                        },
+                        editable: true,
+                        //editmode: "dblclick",
+                        selectionmode: "singlecell",
+                        showtoolbar: true,
+                        autoheight: true,
+                        autorowheight: true,
+                        rendertoolbar: function (t) {
+                            btnAdd = $("<div id=\"btn-tb-add\" style=\"float:left;margin-left:15px;margin-top:7px;cursor:pointer\">ADD</div>");
+                            btnRemove = $("<div id=\"btn-tb-remove\" style=\"float:left;margin-left:10px;margin-top:7px;color:#ccc\">REMOVE</div>");
+
+                            t.append(btnAdd);
+                            t.append(btnRemove);
+
+                            btnAdd.on("click", function () {
+                                var post = {};
+                                post.IntTitle = "[ default-int-title ]";
+                                post.Title = "[ default-title ]";
+                                post.Runtime = "00:00:00";
+                                $.ajax({type: "post", url: "modules/movieslist/add.php", data: {post: post}, success: function (r) {
+                                        $("#grid-movieslist").jqxGrid("updatebounddata");
+                                    }});
+                            });
+
+                            btnRemove.on("click", function () {
+
+                            });
+                        },
+                        columns: [
+                            {text: "", datafield: "_status", width: 25, editable: false, pinned: true, align: "center"},
+                            {text: "International Title", datafield: "IntTitle", width: 250, align: "center"},
+                            {text: "Title", datafield: "Title", width: 250, align: "center"},
+                            {text: "Runtime", datafield: "Runtime", width: 100, align: "center"},
+                            {text: "Genres", datafield: "Genres", columntype: "template", createeditor: function (row, value, editor, cellText, width, height) {
+                                    editor.jqxDropDownList({source: new $.jqx.dataAdapter(genres_src),
+                                        displayMember: "name", width: width, height: height, checkboxes: true, autoDropDownHeight: true,
+                                        selectionRenderer: function () {
+                                            return "<span style=\"top:4px; position: relative;\">Please Choose:</span>";
+                                        }, theme: _GLOBAL.theme});
+                                },
+                                initeditor: function (row, cellvalue, editor, celltext, pressedkey) {
+                                    var items = editor.jqxDropDownList("getItems");
+                                    editor.jqxDropDownList("uncheckAll");
+                                    var values = cellvalue.split(/,\s*/);
+                                    for (var j = 0; j < values.length; j++) {
+                                        for (var i = 0; i < items.length; i++) {
+                                            if (items[i].label === values[j]) {
+                                                editor.jqxDropDownList("checkIndex", i);
+                                            }
+                                        }
+                                    }
+                                },
+                                width: 150, align: "center"},
+                            {text: "ReleaseDate", datafield: "ReleaseDate", columntype: "datetimeinput", cellsformat: "dd-MM-yyyy", width: 100, align: "center"},
+                            {text: "Studio", datafield: "Studio", columntype: "dropdownlist", createeditor: function (row, value, editor) {
+                                    editor.jqxDropDownList({source: new $.jqx.dataAdapter(studios_src), displayMember: "name", autoDropDownHeight: false});
+                                }, width: 200, align: "center"},
+                            {text: "Distributor", datafield: "Distributor", columntype: "dropdownlist", width: 150, align: "center"}
+                        ],
+                        theme: _GLOBAL.theme});
+            // events
+
+        });

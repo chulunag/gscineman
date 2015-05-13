@@ -4,7 +4,7 @@ include_once $_SERVER ['DOCUMENT_ROOT'] . '/modules/common/class-nosql-database.
 
 $db = new NoSqlDatabase();
 
-$docs = $db->nosql->gsdb->genres->find()->sort(['name' => -1]);
+$docs = $db->nosql->gsdb->studios->find();
 
 $items = [];
 foreach ($docs as $item) {
@@ -12,4 +12,3 @@ foreach ($docs as $item) {
 }
 
 echo json_encode(['items' => $items]);
-
