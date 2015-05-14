@@ -39,7 +39,7 @@ $(document).ready(
             $("#grid-movieslist").jqxGrid(
                     {
                         source: grid_movieslist_src,
-                        width: 920,
+                        width: 898,
                         pageable: true,
                         showstatusbar: true,
                         renderstatusbar: function (s) {
@@ -79,7 +79,7 @@ $(document).ready(
                             {text: "Runtime", datafield: "Runtime", width: 100, align: "center"},
                             {text: "Format", datafield: "Format", columntype: "dropdownlist", createeditor: function (row, value, editor) {
                                     editor.jqxDropDownList({source: ["2D", "3D"], autoDropDownHeight: true});
-                                }, width: 100, align: "center"},
+                                }, width: 80, align: "center"},
                             {text: "ReleaseDate", datafield: "ReleaseDate", columntype: "datetimeinput", cellsformat: "dd-MM-yyyy", width: 100, align: "center"},
                             /* phan nay nghien cuu lai, van de nhap lieu chua tot*/
                             {text: "Genres", datafield: "Genres", columntype: "template", createeditor: function (row, value, editor, cellText, width, height) {
