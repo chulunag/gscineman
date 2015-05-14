@@ -18,7 +18,7 @@ $(document).ready(
                 datatype: "json",
                 url: "modules/common/movies-list.php",
                 datafields: [{name: "_id"},
-                    {name: "IntTitle"}, {name: "Title"}, {name: "Runtime"},
+                    {name: "IntTitle"}, {name: "Title"}, {name: "Runtime"}, {name: "Format"},
                     {name: "Studio"}, {name: "Distributor"}, {name: "Genres"}, {name: "ReleaseDate", type: "date"}],
                 root: "items",
                 updaterow: function (rowid, rowdata, commit) {
@@ -27,6 +27,7 @@ $(document).ready(
                     post.IntTitle = rowdata.IntTitle;
                     post.Title = rowdata.Title;
                     post.Runtime = rowdata.Runtime;
+                    post.Format = rowdata.Format;
                     post.Genres = rowdata.Genres;
                     post.ReleaseDate = rowdata.ReleaseDate;
                     post.Studio = rowdata.Studio;
@@ -76,8 +77,11 @@ $(document).ready(
                             {text: "International Title", datafield: "IntTitle", pinned: true, width: 220, align: "center"},
                             {text: "Title", datafield: "Title", width: 220, align: "center"},
                             {text: "Runtime", datafield: "Runtime", width: 100, align: "center"},
-                            {text: "Format", datafield: "Format", width: 100, align: "center"},
+                            {text: "Format", datafield: "Format", columntype: "dropdownlist", createeditor: function (row, value, editor) {
+                                    editor.jqxDropDownList({source: ["2D", "3D"], autoDropDownHeight: true});
+                                }, width: 100, align: "center"},
                             {text: "ReleaseDate", datafield: "ReleaseDate", columntype: "datetimeinput", cellsformat: "dd-MM-yyyy", width: 100, align: "center"},
+                            /* phan nay nghien cuu lai, van de nhap lieu chua tot*/
                             {text: "Genres", datafield: "Genres", columntype: "template", createeditor: function (row, value, editor, cellText, width, height) {
                                     editor.jqxDropDownList({source: new $.jqx.dataAdapter(genres_src),
                                         displayMember: "name", width: width, height: height, checkboxes: true, autoDropDownHeight: true,
@@ -133,9 +137,20 @@ $(document).ready(
                 };
 
                 fd.append("file", f);
-                fd.append("_id", "thong tin id cua grid");
+                fd.append("_id", $("#grid-movieslist").jqxGrid("getrowdata", $("#grid-movieslist").jqxGrid("getselectedcell").rowindex)._id.$id);
 
-                xhr.open("POST", "modules/common/upload.php", true);
+                xhr.open("POST", "modules/movieslist/thumb-upload.php", true);
                 xhr.send(fd);
             });
+
+            $("#grid-movieslist").on("cellselect", function (e) {
+                //can sua lai khong de thong bao GET 404 report ra console
+                var imgurl = "img/" + $("#grid-movieslist").jqxGrid("getrowdata", $("#grid-movieslist").jqxGrid("getselectedcell").rowindex)._id.$id + ".jpg";
+                $.get(imgurl).done(function () {
+                    $("#img-thumbnail").css({"background-image": "url(" + imgurl + ")"});
+                }).fail(function () {
+                    $("#img-thumbnail").css({"background-image": "url(img/empty.jpg)"});
+                });
+            });
+
         });
