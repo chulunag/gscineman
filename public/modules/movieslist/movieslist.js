@@ -19,7 +19,7 @@ $(document).ready(
                 url: "modules/common/movies-list.php",
                 datafields: [{name: "_id"},
                     {name: "IntTitle"}, {name: "Title"}, {name: "Runtime"},
-                    {name: "Studio"}, {name: "Genres"}, {name: "ReleaseDate", type: "date"}],
+                    {name: "Studio"}, {name: "Distributor"}, {name: "Genres"}, {name: "ReleaseDate", type: "date"}],
                 root: "items",
                 updaterow: function (rowid, rowdata, commit) {
                     var post = {};
@@ -30,6 +30,7 @@ $(document).ready(
                     post.Genres = rowdata.Genres;
                     post.ReleaseDate = rowdata.ReleaseDate;
                     post.Studio = rowdata.Studio;
+                    post.Distributor = rowdata.Distributor;
                     $.ajax({type: "post", url: "modules/movieslist/modify.php", data: {post: post}});
                     commit(true);
                 }};
@@ -37,7 +38,7 @@ $(document).ready(
             $("#grid-movieslist").jqxGrid(
                     {
                         source: grid_movieslist_src,
-                        width: 960,
+                        width: 928,
                         pageable: true,
                         showstatusbar: true,
                         renderstatusbar: function (s) {
@@ -72,8 +73,8 @@ $(document).ready(
                         },
                         columns: [
                             {text: "", datafield: "_status", width: 25, editable: false, pinned: true, align: "center"},
-                            {text: "International Title", datafield: "IntTitle", width: 250, align: "center"},
-                            {text: "Title", datafield: "Title", width: 250, align: "center"},
+                            {text: "International Title", datafield: "IntTitle", pinned: true, width: 220, align: "center"},
+                            {text: "Title", datafield: "Title", width: 220, align: "center"},
                             {text: "Runtime", datafield: "Runtime", width: 100, align: "center"},
                             {text: "Genres", datafield: "Genres", columntype: "template", createeditor: function (row, value, editor, cellText, width, height) {
                                     editor.jqxDropDownList({source: new $.jqx.dataAdapter(genres_src),
@@ -99,9 +100,15 @@ $(document).ready(
                             {text: "Studio", datafield: "Studio", columntype: "dropdownlist", createeditor: function (row, value, editor) {
                                     editor.jqxDropDownList({source: new $.jqx.dataAdapter(studios_src), displayMember: "name", autoDropDownHeight: false});
                                 }, width: 200, align: "center"},
-                            {text: "Distributor", datafield: "Distributor", columntype: "dropdownlist", width: 150, align: "center"}
+                            {text: "Distributor", datafield: "Distributor", columntype: "dropdownlist", createeditor: function (row, value, editor) {
+                                    editor.jqxDropDownList({source: ["CGV", "BHD", "GALAXY CINEMA", "LOTTE CINEMA"], autoDropDownHeight: true});
+                                }, width: 150, align: "center"}
                         ],
                         theme: _GLOBAL.theme});
             // events
+            $("#img-thumbnail").click(function () {
+                var r = $("#grid-movieslist").jqxGrid("getrowdata", $("#grid-movieslist").jqxGrid("getselectedcell").rowindex);
 
+                confirm("Upload thumbnail poster for " + r.IntTitle + "?");
+            });
         });
