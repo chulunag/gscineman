@@ -13,19 +13,21 @@ $(document).ready(
             }
 
             function md_status() {//render trang thai nut mark & disabled
-                if (__selected.addition.mark !== undefined) {
-                    $("#btn-mark").attr({value: __selected.addition.mark});
-                    $("#btn-mark").css({"background-color": parseInt(__selected.addition.mark) ? "#669900" : ""});
-                    $("#btn-mark").css({color: parseInt(__selected.addition.mark) ? "#fff" : ""});
-                }
-
-                if (__selected.addition.disabled !== undefined) {
-                    $("#btn-disabled").attr({value: __selected.addition.disabled});
-                    $("#btn-disabled").css({"background-color": parseInt(__selected.addition.disabled) ? "#cc3300" : ""});
-                    $("#btn-disabled").css({color: parseInt(__selected.addition.disabled) ? "#fff" : ""});
-                }
+                var post = {};
+                post.__action = "get_addition";
+                post._id = __selected._id.$id;
+                $.ajax({type: "post", url: "modules/movieslist/movieslist.php", data: {post: post}, success: function (r) {
+                        var r = r ? JSON.parse(r) : {mark: 0, disabled: 0};
+                        //
+                        $("#btn-mark").attr({value: r.mark});
+                        $("#btn-mark").css({"background-color": parseInt(r.mark) ? "#669900" : "", color: parseInt(r.mark) ? "#fff" : ""});
+                        //
+                        $("#btn-disabled").attr({value: r.disabled});
+                        $("#btn-disabled").css({"background-color": parseInt(r.disabled) ? "#cc3300" : "", color: parseInt(r.disabled) ? "#fff" : ""});
+                    }});
             }
 
+            var __changed = false;//bien ghi nhan su thay doi row nay sang row khac
             var __selected = {};//bien luu tru thong tin khi cell duoc chon
             var genres_src = {datatype: "json", url: "modules/common/genres-list.php", datafields: [{name: "name"}], root: "items"};
             var format_src = [{name: "2D"}, {name: "3D"}];
@@ -35,7 +37,7 @@ $(document).ready(
                 url: "modules/common/movies-list.php",
                 datafields: [{name: "_id"},
                     {name: "IntTitle"}, {name: "Title"}, {name: "Runtime"}, {name: "Format"},
-                    {name: "Studio"}, {name: "Distributor"}, {name: "Genres"}, {name: "ReleaseDate", type: "date"}, {name: "addition"}],
+                    {name: "Studio"}, {name: "Distributor"}, {name: "Genres"}, {name: "ReleaseDate", type: "date"}],
                 root: "items",
                 updaterow: function (rowid, rowdata, commit) {
                     var post = {};
@@ -57,7 +59,7 @@ $(document).ready(
             $("#grid-movieslist").jqxGrid(
                     {
                         source: grid_movieslist_src,
-                        width: 898,
+                        width: 874,
                         //pageable: true,
                         //showstatusbar: true,
                         renderstatusbar: function (s) {
@@ -65,8 +67,11 @@ $(document).ready(
                         },
                         editable: true,
                         sortable: true,
-                        editmode: "dblclick",
-                        selectionmode: "singlecell",
+                        filterable: true,
+                        showfilterrow: true,
+                        //editmode: "dblclick",
+                        selectionmode: "multiplecellsextended",
+                        //selectionmode: "singlecell",
                         showtoolbar: true,
                         autoheight: true,
                         autorowheight: true,
@@ -89,7 +94,6 @@ $(document).ready(
                             });
                         },
                         columns: [
-                            {text: "", datafield: "_status", width: 25, editable: false, pinned: true, align: "center"},
                             {text: "International Title", datafield: "IntTitle", pinned: true, width: 220, align: "center"},
                             {text: "Title", datafield: "Title", width: 220, align: "center"},
                             {text: "Runtime", datafield: "Runtime", width: 100, align: "center"},

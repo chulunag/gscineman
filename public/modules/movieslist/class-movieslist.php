@@ -14,7 +14,7 @@ class MoviesList {
         }
     }
 
-    public function get_post($post) {
+    public function set_post($post) {
         $this->post = $post;
     }
 
@@ -26,6 +26,13 @@ class MoviesList {
     public function set_disabled() {
         $this->db->movies->update(
                 array('_id' => new MongoId($this->post['_id'])), array('$set' => ['addition.disabled' => $this->post['disabled']]), array('upsert' => false));
+    }
+
+    public function get_addition() {
+        $doc = $this->db->movies->findOne(array('_id' => new MongoId($this->post['_id'])));
+
+        if (isset($doc['addition']))
+            echo json_encode($doc['addition']);
     }
 
 }
