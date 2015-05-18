@@ -1,31 +1,33 @@
 @font-face {
-	font-family: "RobotoCondensed-Light";
-	src: url("../fonts/RobotoCondensed-Light.ttf");
+    font-family: "RobotoCondensed-Light";
+    src: url("../fonts/RobotoCondensed-Light.ttf");
 }
 
 @font-face {
-	font-family: "RobotoCondensed-Bold";
-	src: url("../fonts/RobotoCondensed-Bold.ttf");
+    font-family: "RobotoCondensed-Bold";
+    src: url("../fonts/RobotoCondensed-Bold.ttf");
 }
 
 * {
-	margin: 0 0 0 0;
-	padding: 0 0 0 0;
-	font-family: "RobotoCondensed-Light" !important;
-	font-size: 12pt !important;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    font-family: "RobotoCondensed-Light" !important;
+    font-size: 12pt !important;
 }
 
 #main-content {
-	margin-top: 10px;
+    margin-top: 10px;
 }
 
 #main-menu * {
-	font-family: "RobotoCondensed-Bold" !important;
-	color: SlateGray;
+    font-family: "RobotoCondensed-Bold" !important;
+    color: SlateGray;
 }
 
+.mnu-selected{color:#ff6000 !important}
+
 .panel-L {
-	background-size: 300px 400px;
-	background-image: radial-gradient(circle at top left, #dddddd, #ffffff 50%);
-	background-repeat: no-repeat;
+    background-size: 300px 400px;
+    background-image: radial-gradient(circle at top left, #dddddd, #ffffff 50%);
+    background-repeat: no-repeat;
 }

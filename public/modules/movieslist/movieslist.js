@@ -28,7 +28,7 @@ $(document).ready(
             }
 
             var __changed = false;//bien ghi nhan su thay doi row nay sang row khac
-            var __selected = {};//bien luu tru thong tin khi cell duoc chon
+            var __selected = false;//bien luu tru thong tin khi cell duoc chon
             var genres_src = {datatype: "json", url: "modules/common/genres-list.php", datafields: [{name: "name"}], root: "items"};
             var format_src = [{name: "2D"}, {name: "3D"}];
             var studios_src = {datatype: "json", url: "modules/common/studios-list.php", datafields: [{name: "name"}], root: "items"};
@@ -69,6 +69,7 @@ $(document).ready(
                         sortable: true,
                         filterable: true,
                         showfilterrow: true,
+                        //autoshowfiltericon: false,
                         //editmode: "dblclick",
                         selectionmode: "multiplecellsextended",
                         //selectionmode: "singlecell",
@@ -178,41 +179,50 @@ $(document).ready(
             });
             $("#grid-movieslist").on("cellselect", function (e) {
                 //can sua lai khong de thong bao GET 404 report ra console
-                //con nhieu van de o day
                 __selected = $("#grid-movieslist").jqxGrid("getrowdata", $("#grid-movieslist").jqxGrid("getselectedcell").rowindex);
 
-                md_status();
+                if (!__changed) {
+                    __changed = __selected._id.$id;
 
-                var imgurl = "img/" + __selected._id.$id + ".jpg";
-                $.get(imgurl).done(function () {
-                    $("#img-thumbnail").css({"background-image": "url(" + imgurl + ")"});
-                }).fail(function () {
-                    $("#img-thumbnail").css({"background-image": "url(img/empty.jpg)"});
-                });
+                    var imgurl = "img/" + __selected._id.$id + ".jpg";
+                    $.get(imgurl).done(function () {
+                        $("#img-thumbnail").css({"background-image": "url(" + imgurl + ")"});
+                    }).fail(function () {
+                        $("#img-thumbnail").css({"background-image": "url(img/empty.jpg)"});
+                    });
 
+                    md_status();
+                } else {
+                    //__selected = $("#grid-movieslist").jqxGrid("getrowdata", $("#grid-movieslist").jqxGrid("getselectedcell").rowindex);
+                    if (__changed !== __selected._id.$id) {
+                        __changed = __selected._id.$id;
+
+                        var imgurl = "img/" + __selected._id.$id + ".jpg";
+                        $.get(imgurl).done(function () {
+                            $("#img-thumbnail").css({"background-image": "url(" + imgurl + ")"});
+                        }).fail(function () {
+                            $("#img-thumbnail").css({"background-image": "url(img/empty.jpg)"});
+                        });
+
+                        md_status();
+                    }
+                }
             });
+
             $("#btn-mark").click(function () {
-
                 toggled(this, "#669900");
-
                 var post = {};
                 post.__action = 'set_mark';
                 post._id = __selected._id.$id;
                 post.mark = this.value;
-                $.ajax({type: "post", url: "/modules/movieslist/mark.php", data: {post: post}, success: function () {
-                        $("#grid-movieslist").jqxGrid("updatebounddata");
-                    }});
+                $.ajax({type: "post", url: "/modules/movieslist/movieslist.php", data: {post: post}});
             });
             $("#btn-disabled").click(function () {
-
                 toggled(this, "#cc3300");
-
                 var post = {};
                 post.__action = 'set_disabled';
                 post._id = __selected._id.$id;
                 post.disabled = this.value;
-                $.ajax({type: "post", url: "/modules/movieslist/movieslist.php", data: {post: post}, success: function () {
-                        $("#grid-movieslist").jqxGrid("updatebounddata");
-                    }});
+                $.ajax({type: "post", url: "/modules/movieslist/movieslist.php", data: {post: post}});
             });
         });

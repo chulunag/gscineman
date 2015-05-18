@@ -1,50 +1,41 @@
 var _GLOBAL = {
-	theme : "metro",
-	uri : null,
-	cache : {}
+    theme: "metro",
+    cache: {}
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
 
-	$("#main-menu").jqxMenu({
-		clickToOpen : true,
-		animationHideDuration : 0,
-		animationShowDuration : 0,
-		animationHideDelay : 0,
-		animationShowDelay : 0,
-		autoCloseInterval : 0,
-		autoCloseOnClick : true,
-		theme : _GLOBAL.theme
-	});
+    $("#main-menu").jqxMenu({clickToOpen: true, animationHideDuration: 0, animationShowDuration: 0, animationHideDelay: 0, animationShowDelay: 0, autoCloseInterval: 0, autoCloseOnClick: true, theme: _GLOBAL.theme});
 
-	// events
-	$("#mnu-home").click(function() {
-		_GLOBAL.uri = "modules/home/screen-home.php";
-		$("#main-content").empty();
-		$("#main-content").load(_GLOBAL.uri);
-	});
-	$("#mnu-tickets").click(function() {
-		_GLOBAL.uri = "modules/tickets/screen-tickets.php";
-		$("#main-content").empty();
-		$("#main-content").load(_GLOBAL.uri);
-	});
-	$("#mnu-members").click(function() {
-		_GLOBAL.uri = "modules/members/screen-members.php";
-		$("#main-content").empty();
-		$("#main-content").load(_GLOBAL.uri);
-	});
-	$("#mnu-movieslist").click(function() {
-		_GLOBAL.uri = "modules/movieslist/screen-movieslist.php";
-		$("#main-content").empty();
-		$("#main-content").load(_GLOBAL.uri);
-	});
-	$("#mnu-moviesscheduler").click(function() {
-		_GLOBAL.uri = "modules/moviesscheduler/screen-moviesscheduler.php";
-		$("#main-content").empty();
-		$("#main-content").load(_GLOBAL.uri);
-	});
+    // events
+    $("#main-menu").on("itemclick", function (e) {
+        switch (e.args.id) {
+            case "mnu-movieslist":
+                $("#main-content").empty();
+                $("#main-content").load("modules/movieslist/screen-movieslist.php");
 
-	// $(window).on("beforeunload", function() {
-	// return false;
-	// });
+                $("[id^=mnu-]").removeClass("mnu-selected");
+                $("#mnu-movieslist").addClass("mnu-selected");
+                break;
+
+            case "mnu-moviesscheduler":
+                $("#main-content").empty();
+                $("#main-content").load("modules/moviesscheduler/screen-moviesscheduler.php");
+
+                $("[id^=mnu-]").removeClass("mnu-selected");
+                $("#mnu-moviesscheduler").addClass("mnu-selected");
+                break;
+            case "mnu-home":
+                $("#main-content").empty();
+                $("#main-content").load("modules/home/screen-home.php");
+
+                $("[id^=mnu-]").removeClass("mnu-selected");
+                $("#mnu-home").addClass("mnu-selected");
+                break;
+        }
+    });
+
+    // $(window).on("beforeunload", function() {
+    // return false;
+    // });
 });

@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
-        <title>GSCINEMAN 0.2</title>
+        <title>CINEMAN 0.2</title>
         <link rel="stylesheet" href="js/jqwidgets/styles/jqx.base.css">
         <link rel="stylesheet" href="js/jqwidgets/styles/jqx.metro.css">
         <link rel="stylesheet" href="css/default.css">
@@ -16,7 +16,7 @@
     <body>
         <div id="main-menu">
             <ul>
-                <li id="mnu-home" style="color: #ff6000">GSCINEMAN</li>
+                <li id="mnu-home" style="color: #000">CINEMAN</li>
                 <li id="mnu-tickets">TICKETS</li>
                 <li id="mnu-members">MEMBERS</li>
                 <li id="mnu-movieslist">MOVIES LIST</li>
