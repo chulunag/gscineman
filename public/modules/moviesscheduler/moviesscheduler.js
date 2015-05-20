@@ -10,16 +10,9 @@ $(document).ready(function () {
         {room: 3, scheduler: {}}];
 
     //functions
-    function recursiveN() {//ham tra ra node goc' voi N buoc
-
-    }
-    function rtPx(t) {//ham chuyen doi runtime ra pixel
+    function rtPx(t) {//ham chuyen doi runtime ra pixel | neu split < 2 thi la minutes
         var t = t.split(":");
-        return (parseInt(t[0]) * 60 + parseInt(t[1])) * 1;
-    }
-
-    function schedulerRender() {
-
+        return (parseInt(t[0]) * 60 + parseInt(t[1])) * 2;
     }
     //components
     $("#txt-search").jqxInput({placeHolder: "enter movie name...", source: function (q, r) {
@@ -68,10 +61,6 @@ $(document).ready(function () {
         e.originalEvent.dataTransfer.setDragImage(__icon_drag_movie, 24, 24);
     });
 
-    $("#selected-movies").on("dragstart", "[role=rest]", function (e) {
-        e.originalEvent.dataTransfer.setData("data", e.currentTarget.attributes.data.value);
-    });
-
     $("div[role=room]").on("dragover", function (e) {
         e.preventDefault();
         e.currentTarget.style.border = "5px dashed black";
@@ -91,27 +80,42 @@ $(document).ready(function () {
         __colors.push(o.bg);//tra lai mau sac
     });
 
-    $("div[role=room]").on("drop", function (e) {
+    $("div[role=room]").on("drop", function (e) {//xu ly du lieu khi drop
         e.preventDefault();
         e.currentTarget.style.border = "";
-        var self = this, data;
+        var data = JSON.parse(e.originalEvent.dataTransfer.getData("data").replace(/'/g, '"'));
+        var l = $(this).children().last().attr("role");
+        if (l !== "rest" && l !== undefined)
+            $(this).append('<div role="rest"><input value="15"></div>');
 
-        data = JSON.parse(e.originalEvent.dataTransfer.getData("data").replace(/'/g, '"'));
-
-        if (data.rest)
-            $(self).append('<div><input role="rest" value="15"></div>');
-        else
-            $(self).append('<div role="on-timeline" style="background-color:' + data.bg + ';width:' + rtPx(data.Runtime) + 'px;">' +
-                    '<div><img role="m-remove" title="remove" style="margin-left:6px;"></div>' +
-                    '<div style="margin-left:6px">' + data.IntTitle + '</div>' +
-                    '<div style="margin-left:6px">' + data.Format + '</div>' +
-                    '<div style="margin-left:6px">start | end</div>' +
-                    '</div>');
+        $(this).append('<div role="movie-on-timeline" style="background-color:' + data.bg + ';width:' + rtPx(data.Runtime) + 'px;">' +
+                '<div><img role="m-remove" title="remove" style="margin-left:6px;"></div>' +
+                '<div style="margin-left:6px">' + data.IntTitle + '</div>' +
+                '<div style="margin-left:6px"><div style="float:left;margin-right:10px">' + data.Runtime + '</div>' +
+                '<div role="format" style="float:left">' + data.Format + '</div></div>' +
+                '<div role="start-end" style="clear:both;margin-left:6px">start | end</div>' +
+                '</div>');
     });
 
-    $("div[role=room]").on("click", "img[role=m-remove]", function (e) {
-        var n = e.currentTarget.parentNode.parentNode;
-        var p = e.currentTarget.parentNode.parentNode.parentNode;
-        p.removeChild(n);
+    $("div[role=room]").on("click", "img[role=m-remove]", function () {//xoa phim tren timeline
+        var cls = $(this).closest("div[role=movie-on-timeline]");
+        var n = cls.next();
+        var p = cls.prev();
+        var l = cls.is(":last-child");
+
+        if (n.attr("role") === "rest") {
+            n.remove();
+            $(this).closest("div[role=movie-on-timeline]").remove();
+        } else {
+            if (l && p.attr("role") === "rest")
+                p.remove();
+            $(this).closest("div[role=movie-on-timeline]").remove();
+        }
+    });
+
+    $("input[role=time-start]").on("input", function () {
+        var a = rtPx($(this).val()) - 7 * 60 * 2;
+        var w = a > 0 ? a / 2 + 120 : 120;
+        $(this).closest("div").css({width: w});
     });
 });

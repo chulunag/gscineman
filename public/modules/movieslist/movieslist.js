@@ -59,7 +59,7 @@ $(document).ready(
             $("#grid-movieslist").jqxGrid(
                     {
                         source: grid_movieslist_src,
-                        width: 874,
+                        width: 854,
                         //pageable: true,
                         //showstatusbar: true,
                         renderstatusbar: function (s) {
@@ -85,7 +85,7 @@ $(document).ready(
                                 var post = {};
                                 post.IntTitle = "[ default-int-title ]";
                                 post.Title = "[ default-title ]";
-                                post.Runtime = "00:00:00";
+                                post.Runtime = "00:00";
                                 $.ajax({type: "post", url: "modules/movieslist/add.php", data: {post: post}, success: function (r) {
                                         $("#grid-movieslist").jqxGrid("updatebounddata");
                                     }});
@@ -97,7 +97,7 @@ $(document).ready(
                         columns: [
                             {text: "International Title", datafield: "IntTitle", pinned: true, width: 220, align: "center"},
                             {text: "Title", datafield: "Title", width: 220, align: "center"},
-                            {text: "Runtime", datafield: "Runtime", width: 100, align: "center"},
+                            {text: "Runtime", datafield: "Runtime", width: 80, align: "center"},
                             /* Format : Multi */
                             {text: "Format", datafield: "Format", columntype: "template", createeditor: function (row, value, editor, cellText, width, height) {
                                     editor.jqxDropDownList({source: new $.jqx.dataAdapter(format_src), displayMember: "name", checkboxes: true, selectionRenderer: function () {
