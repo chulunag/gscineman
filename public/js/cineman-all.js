@@ -49,16 +49,30 @@ String.prototype.toMinutes = function () {
     $.fn.MoviesQueue = function (o) {
         var self = this, p;
         var m = {
-            add: function () {
+            add: function (a) {
+                var e = '<div role="queue-selected" draggable="true" data="' + JSON.stringify(a).replace(/"/g, "'") + '" style="background-color:' + a.bg + '">' +
+                        '<img role="m-remove" title="remove" style="margin-right:6px;"><span>' + a.IntTitle + '</span>' +
+                        '</div>';
+                $(self).append(e);
             },
-            remove: function () {
+            remove: function (a, b) {
+                var e = $(a.currentTarget).closest("div[role=queue-selected]");
+                b.push(e.css("background-color"));
+                e.remove();
             }
         };
 
         if (arguments.length) {
             switch (typeof (arguments[0])) {
                 case 'string':
-                    m[arguments[0]](arguments[1]);
+                    switch (arguments[0]) {
+                        case "add":
+                            m.add(arguments[1]);
+                            break;
+                        case "remove":
+                            m.remove(arguments[1], arguments[2]);
+                            break;
+                    }
                     break;
                 case 'object':
                     p = o;

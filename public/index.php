@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
-        <title>CINEMAN 0.2</title>
+        <title>CINEMAN 0.3</title>
         <link rel="stylesheet" href="js/jqwidgets/styles/jqx.base.css">
         <link rel="stylesheet" href="js/jqwidgets/styles/jqx.metro.css">
         <link rel="stylesheet" href="css/default.css">

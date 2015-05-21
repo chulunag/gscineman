@@ -1,10 +1,9 @@
 $(document).ready(function () {
-    var __colors = ["#66CCCC", "#66CCFF", "#66CC99", "#3366FF", "#990099", "#6633CC", "#669999"];
-    var __current;//bien dung de luu thong tin khi search movie
+    var moviesqueueColors = ["#66CCCC", "#66CCFF", "#66CC99", "#3366FF", "#990099", "#6633CC", "#669999"];
     var __icon_drag_movie = document.createElement("img");
     __icon_drag_movie.src = "/img/icon-drag-movie.png";
 
-    var __scheduler = [
+    var scheduler = [
         {room: 1, scheduler: {}},
         {room: 2, scheduler: {}},
         {room: 3, scheduler: {}}];
@@ -15,7 +14,7 @@ $(document).ready(function () {
         return (parseInt(t[0]) * 60 + parseInt(t[1])) * 2;
     }
     //components
-    $("#txt-search").jqxInput({placeHolder: "enter movie name...", source: function (q, r) {
+    $("#txt-search").jqxInput({placeHolder: "enter movie name", source: function (q, r) {
             var d = new $.jqx.dataAdapter(
                     {type: "post", datatype: "json", datafields: [{name: "IntTitle"}, {name: "Runtime"}], url: "modules/common/movies-list.php"},
             {autoBind: true,
@@ -30,33 +29,22 @@ $(document).ready(function () {
                     }));
                 }
             });
-        }, renderer: function (a, b) {
-            return a;
-        }, searchMode: "startswithignorecase", width: 480, height: 30, theme: _GLOBAL.theme});
-
-    $("button").jqxButton({height: 30, theme: _GLOBAL.theme});
+        }, searchMode: "startswithignorecase", width: 280, height: 30, theme: _GLOBAL.theme});
 
     //events
     $("#txt-search").on("select", function (e) {
-        if (e.args)
-            __current = e.args.item;
-    });
+        var c = e.args ? e.args.item : null;
 
-    $("#btn-add").click(function () {
-        if (__current) {
-            var o = JSON.parse(__current.value);
-            o.bg = __colors.pop();
-
-            var movie = '<div role="queue-selected" draggable="true" style="background-color:' + o.bg + ';" data="'
-                    + JSON.stringify(o).replace(/"/g, "'") + '"><img role="m-remove" title="remove" style="margin-right:6px;"><span>' + __current.label + '</span></div>';
-            $("#selected-movies").append(movie);
+        if (c) {
+            var o = JSON.parse(c.value);
+            o.bg = moviesqueueColors.pop();
+            $("#movies-queue").MoviesQueue("add", o);
         }
-
-        __current = null;
+        c = null;
         $("#txt-search").val("");
     });
 
-    $("#selected-movies").on("dragstart", "[role=queue-selected]", function (e) {
+    $("#movies-queue").on("dragstart", "[role=queue-selected]", function (e) {
         e.originalEvent.dataTransfer.setData("data", e.currentTarget.attributes.data.value);
         e.originalEvent.dataTransfer.setDragImage(__icon_drag_movie, 24, 24);
     });
@@ -71,19 +59,23 @@ $(document).ready(function () {
         e.currentTarget.style.border = "";
     });
 
-    $("#selected-movies").on("click", "[role=m-remove]", function (e) {
-        //remove phim
+    $("#movies-queue").on("click", "[role=m-remove]", function (e) {/* remove movie queue */
+
+        $("#movies-queue").MoviesQueue("remove", e, moviesqueueColors);
+
+        return;
         var n = e.currentTarget.parentNode;
         var p = e.currentTarget.parentNode.parentNode;
         var o = JSON.parse($(n).attr("data").replace(/'/g, '"'));//lay lai thong tin mau sac
         p.removeChild(n);
-        __colors.push(o.bg);//tra lai mau sac
+        moviesqueueColors.push(o.bg);//tra lai mau sac
     });
 
     $("div[role=room]").on("drop", function (e) {//xu ly du lieu khi drop
         e.preventDefault();
         e.currentTarget.style.border = "";
         var data = JSON.parse(e.originalEvent.dataTransfer.getData("data").replace(/'/g, '"'));
+
         var l = $(this).children().last().attr("role");
         if (l !== "rest" && l !== undefined)
             $(this).append('<div role="rest"><input value="15"></div>');

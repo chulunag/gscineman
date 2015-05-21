@@ -3,7 +3,7 @@
         div[role=room]{width:2400px;height:85px;background-color:#eee;}
         div[role=room] > div{float:left;}
         div[role=room] > div:first-child{width:120px;color:#fff;background-color:#000;}
-        #selected-movies div{float:left;}
+        #movies-queue div{float:left;}
         div[role=queue-selected]{color:#fff;height:21px;line-height:21px;margin-right:6px;margin-left:6px;padding-left:6px;padding-right:6px;cursor:pointer;}
         input[role=time-start]{width:40px;border:none;text-align:center}
         div[role=movie-on-timeline]{cursor:pointer;color:#fff;}
@@ -11,11 +11,11 @@
         img[role=m-remove]{content:url(/img/icon-remove-movie.png);opacity:0.4}
     </style>
 
-    <div style="line-height:30px"><span style="margin-right:10px">MOVIE</span><span><input id="txt-search" style="border:none;background-color:#eee"></span><span><button id="btn-add" style="margin-left:12px;cursor:pointer;">ADD</button></span></div>
+    <div style=""><span style="margin-right:10px">MOVIE</span><span><input id="txt-search" style="border:none;"></span></div>
 
     <div style="clear:both;margin-top:12px"></div>
 
-    <div id="selected-movies"><div style="margin-right:10px">SELECTED MOVIES</div></div>
+    <div id="movies-queue"><div>SELECTED MOVIES</div></div>
 
     <div style="clear:both;height:24px;"></div>
 
