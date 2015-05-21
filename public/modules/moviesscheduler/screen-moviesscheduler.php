@@ -44,5 +44,4 @@
     <div style="clear:both;height:24px;"></div>
     <div>SUMMARY : </div>
 </div>
-
 <script src="modules/moviesscheduler/moviesscheduler.js"></script>
