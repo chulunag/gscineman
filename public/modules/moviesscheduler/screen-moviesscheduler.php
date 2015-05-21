@@ -19,7 +19,7 @@
 
     <div style="clear:both;height:24px;"></div>
 
-    <div style="width:1200px;overflow-x:auto;">
+    <div onmouseover="$(this).css({'overflow-x': 'auto'})" onmouseout="$(this).css({'overflow-x': 'hidden'})" style="width:1200px;overflow-x:hidden;">
         <div role="room" no="1" accept="2D,3D">
             <div><span><strong>ROOM 01</strong></span><input role="time-start" value="07:00" maxlength="5" style="margin-left:10px"></div>
         </div>
@@ -27,7 +27,7 @@
 
     <div style="clear:both;height:12px;"></div>
 
-    <div style="width:1200px;overflow-x:auto;">
+    <div onmouseover="$(this).css({'overflow-x': 'auto'})" onmouseout="$(this).css({'overflow-x': 'hidden'})" style="width:1200px;overflow-x:hidden;">
         <div role="room" no="2" accept="2D">
             <div><span><strong>ROOM 02</strong></span><input role="time-start" value="07:00" maxlength="5" style="margin-left:10px"></div>
         </div>
@@ -35,7 +35,7 @@
 
     <div style="clear:both;height:12px;"></div>
 
-    <div style="width:1200px;overflow-x:auto;">
+    <div onmouseover="$(this).css({'overflow-x': 'auto'})" onmouseout="$(this).css({'overflow-x': 'hidden'})" style="width:1200px;overflow-x:hidden;">
         <div role="room" no="3" accept="2D,3D">
             <div><span><strong>ROOM 03</strong></span><input role="time-start" value="07:00" maxlength="5" style="margin-left:10px"></div>
         </div>
