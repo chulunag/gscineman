@@ -10,6 +10,13 @@ $(document).ready(function () {
     // events
     $("#main-menu").on("itemclick", function (e) {
         switch (e.args.id) {
+            case "mnu-members":
+                $("#main-content").empty();
+                $("#main-content").load("modules/members/screen-members.php");
+
+                $("[id^=mnu-]").removeClass("mnu-selected");
+                $("#mnu-members").addClass("mnu-selected");
+                break;
             case "mnu-movieslist":
                 $("#main-content").empty();
                 $("#main-content").load("modules/movieslist/screen-movieslist.php");
@@ -17,7 +24,6 @@ $(document).ready(function () {
                 $("[id^=mnu-]").removeClass("mnu-selected");
                 $("#mnu-movieslist").addClass("mnu-selected");
                 break;
-
             case "mnu-moviesscheduler":
                 $("#main-content").empty();
                 $("#main-content").load("modules/moviesscheduler/screen-moviesscheduler.php");
