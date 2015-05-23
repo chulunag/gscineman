@@ -14,6 +14,8 @@ $(document).ready(function () {
         return (parseInt(t[0]) * 60 + parseInt(t[1])) * 2;
     }
     //components
+    //$("button").jqxButton({theme: _GLOBAL.theme});
+
     $("#txt-search").jqxInput({placeHolder: "enter movie name", source: function (q, r) {
             var d = new $.jqx.dataAdapter(
                     {type: "post", datatype: "json", datafields: [{name: "IntTitle"}, {name: "Runtime"}], url: "modules/common/movies-list.php"},
@@ -31,14 +33,18 @@ $(document).ready(function () {
             });
         }, searchMode: "startswithignorecase", width: 280, height: 30, theme: _GLOBAL.theme});
 
+    $("#_1").scrollToElem();
+    $("#_2").scrollToElem();
+    $("#_3").scrollToElem();
+
     //events
     $("#txt-search").on("select", function (e) {
         var c = e.args ? e.args.item : null;
 
         if (c) {
-            var o = JSON.parse(c.value);
-            o.bg = moviesqueueColors.pop();
-            $("#movies-queue").MoviesQueue("add", o);
+            var data = JSON.parse(c.value);
+            data.bg = moviesqueueColors.pop();
+            $("#movies-queue").MoviesQueue("add", data);
         }
         c = null;
         $("#txt-search").val("");
@@ -60,54 +66,49 @@ $(document).ready(function () {
     });
 
     $("#movies-queue").on("click", "[role=m-remove]", function (e) {/* remove movie queue */
-
         $("#movies-queue").MoviesQueue("remove", e, moviesqueueColors);
-
-        return;
-        var n = e.currentTarget.parentNode;
-        var p = e.currentTarget.parentNode.parentNode;
-        var o = JSON.parse($(n).attr("data").replace(/'/g, '"'));//lay lai thong tin mau sac
-        p.removeChild(n);
-        moviesqueueColors.push(o.bg);//tra lai mau sac
     });
 
     $("div[role=room]").on("drop", function (e) {//xu ly du lieu khi drop
         e.preventDefault();
-        e.currentTarget.style.border = "";
+        $(this).css({border: "none"});
         var data = JSON.parse(e.originalEvent.dataTransfer.getData("data").replace(/'/g, '"'));
 
         var l = $(this).children().last().attr("role");
         if (l !== "rest" && l !== undefined)
             $(this).append('<div role="rest"><input value="15"></div>');
 
-        $(this).append('<div role="movie-on-timeline" style="background-color:' + data.bg + ';width:' + rtPx(data.Runtime) + 'px;">' +
-                '<div><img role="m-remove" title="remove" style="margin-left:6px;"></div>' +
-                '<div style="margin-left:6px">' + data.IntTitle + '</div>' +
-                '<div style="margin-left:6px"><div style="float:left;margin-right:10px">' + data.Runtime + '</div>' +
-                '<div role="format" style="float:left">' + data.Format + '</div></div>' +
-                '<div role="start-end" style="clear:both;margin-left:6px">start | end</div>' +
-                '</div>');
+        $(e.currentTarget).MoviesTimeLine("add", data);
+        $(this).MoviesTimeLine("update")
     });
 
-    $("div[role=room]").on("click", "img[role=m-remove]", function () {//xoa phim tren timeline
-        var cls = $(this).closest("div[role=movie-on-timeline]");
+    $("div[role=room]").on("click", "img[role=m-remove]", function () {/* remove movie on timeline */
+        var cls = $(this).closest("div[role=on-timeline]");
         var n = cls.next();
         var p = cls.prev();
         var l = cls.is(":last-child");
 
         if (n.attr("role") === "rest") {
             n.remove();
-            $(this).closest("div[role=movie-on-timeline]").remove();
+            $(this).closest("div[role=on-timeline]").remove();
         } else {
             if (l && p.attr("role") === "rest")
                 p.remove();
-            $(this).closest("div[role=movie-on-timeline]").remove();
+            $(this).closest("div[role=on-timeline]").remove();
         }
     });
 
-    $("input[role=time-start]").on("input", function () {
+    $("div[role=time-start] > input").on("input", function () {
         var a = rtPx($(this).val()) - 7 * 60 * 2;
-        var w = a > 0 ? a / 2 + 120 : 120;
+        var w = a > 0 ? a / 2 + 140 : 140;
         $(this).closest("div").css({width: w});
+    });
+
+    $(".btn-NP").on("click", function (e) {
+        if ($(e.currentTarget).html() === "N") {
+            $("#_" + $(e.currentTarget).attr("val")).trigger("next");
+        } else {
+            $("#_" + $(e.currentTarget).attr("val")).trigger("prev");
+        }
     });
 });

@@ -5,12 +5,12 @@ String.prototype.toMinutes = function () {
     if (t[0])
         return t = t.length - 1 ? parseInt(t[0]) * 60 + parseInt(t[1]) : parseInt(t[0]);
 
-    return false;
+    return 0;
 };
 
 /*functions*/
 (function ($) {
-    $.fn.MoviesTimeline = function (o) {
+    $.fn.MoviesTimeLine = function (o) {
         /*
          * r = return , m = method , p = properties
          */
@@ -18,11 +18,22 @@ String.prototype.toMinutes = function () {
 
         var m = {
             add: function (e) {
-                $(self).append('<div role="member"><span role="m-remove">' + e + '</span></div>');
+                $(self).append('<div role="on-timeline" style="background-color:' + e.bg + ';width:' + e.Runtime.toMinutes() * 2 + 'px;">' +
+                        '<div><img role="m-remove" title="remove" style="margin-left:6px;"><span class="txt-count">...</span></div>' +
+                        '<div style="margin-left:6px">' + e.IntTitle + '</div>' +
+                        '<div style="margin-left:6px"><span style="margin-right:10px">' + e.Runtime + '</span><span role="format">' + e.Format + '</span></div>' +
+                        '<div role="start-end" style="margin-left:6px">start > end</div>' +
+                        '</div>');
             },
             remove: function (e) {
                 //console.log(e.currentTarget)
                 //$(e.currentTarget).closest("div[role=member]").remove()
+            },
+            update: function () {
+                //console.log($(self).find("div[role=on-timeline],div[role=rest]"))
+                $(self).find("div[role=time-start],div[role=on-timeline],div[role=rest]").each(function () {
+                    console.log($(this))
+                });
             }
         };
 

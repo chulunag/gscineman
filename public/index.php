@@ -10,6 +10,7 @@
         <script src="js/jquery-2.1.3.min.js"></script>
         <script src="js/jqwidgets/jqx-all.js"></script>
         <script src="js/boot.js"></script>
+        <script src="js/ui.js"></script>
         <script src="js/cineman-all.js"></script>
     </head>
 
@@ -24,6 +25,5 @@
             </ul>
         </div>
         <div id="main-content"></div>
-
     </body>
 </html>
