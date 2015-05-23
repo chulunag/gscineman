@@ -32,7 +32,7 @@ String.prototype.toMinutes = function () {
             update: function () {
                 //console.log($(self).find("div[role=on-timeline],div[role=rest]"))
                 $(self).find("div[role=time-start],div[role=on-timeline],div[role=rest]").each(function () {
-                    console.log($(this))
+                    //console.log($(this))
                 });
             }
         };

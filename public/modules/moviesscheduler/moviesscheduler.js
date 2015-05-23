@@ -75,10 +75,11 @@ $(document).ready(function () {
         var data = JSON.parse(e.originalEvent.dataTransfer.getData("data").replace(/'/g, '"'));
 
         var l = $(this).children().last().attr("role");
-        if (l !== "rest" && l !== undefined)
+
+        if (l !== "time-start")
             $(this).append('<div role="rest"><input value="15"></div>');
 
-        $(e.currentTarget).MoviesTimeLine("add", data);
+        $(this).MoviesTimeLine("add", data);
         $(this).MoviesTimeLine("update")
     });
 
