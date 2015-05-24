@@ -9,7 +9,7 @@ $(document).ready(function () {
     //functions
 
     //components
-    //$("button").jqxButton({theme: _GLOBAL.theme});
+    $("button").jqxButton({theme: _GLOBAL.theme});
 
     $("#txt-search").jqxInput({placeHolder: "enter movie name", source: function (q, r) {
             var d = new $.jqx.dataAdapter(
