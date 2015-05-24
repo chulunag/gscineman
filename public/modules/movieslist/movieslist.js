@@ -147,6 +147,7 @@ $(document).ready(
                             {text: "Distributor", datafield: "Distributor", columntype: "dropdownlist", createeditor: function (row, value, editor) {
                                     editor.jqxDropDownList({source: ["CGV", "BHD", "GALAXY CINEMA", "LOTTE CINEMA"], autoDropDownHeight: true});
                                 }, width: 150, align: "center"},
+                            {text: "Restricted"},
                             {text: "Storyline"}
                         ],
                         theme: _GLOBAL.theme});

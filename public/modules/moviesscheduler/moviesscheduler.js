@@ -1,18 +1,13 @@
 $(document).ready(function () {
     var moviesqueueColors = ["#66CCCC", "#66CCFF", "#66CC99", "#3366FF", "#990099", "#6633CC", "#669999"];
-    var __icon_drag_movie = document.createElement("img");
-    __icon_drag_movie.src = "/img/icon-drag-movie.png";
 
-    var scheduler = [
-        {room: 1, scheduler: {}},
-        {room: 2, scheduler: {}},
-        {room: 3, scheduler: {}}];
+    var schedule = [
+        {room: 1, schedule: {}},
+        {room: 2, schedule: {}},
+        {room: 3, schedule: {}}];
 
     //functions
-    function rtPx(t) {//ham chuyen doi runtime ra pixel | neu split < 2 thi la minutes
-        var t = t.split(":");
-        return (parseInt(t[0]) * 60 + parseInt(t[1])) * 2;
-    }
+
     //components
     //$("button").jqxButton({theme: _GLOBAL.theme});
 
@@ -52,7 +47,6 @@ $(document).ready(function () {
 
     $("#movies-queue").on("dragstart", "[role=queue-selected]", function (e) {
         e.originalEvent.dataTransfer.setData("data", e.currentTarget.attributes.data.value);
-        e.originalEvent.dataTransfer.setDragImage(__icon_drag_movie, 24, 24);
     });
 
     $("div[role=room]").on("dragover", function (e) {
@@ -80,7 +74,7 @@ $(document).ready(function () {
             $(this).append('<div role="rest"><input value="15"></div>');
 
         $(this).MoviesTimeLine("add", data);
-        $(this).MoviesTimeLine("update")
+        $(this).MoviesTimeLine("update");
     });
 
     $("div[role=room]").on("click", "img[role=m-remove]", function () {/* remove movie on timeline */
@@ -88,6 +82,7 @@ $(document).ready(function () {
         var n = cls.next();
         var p = cls.prev();
         var l = cls.is(":last-child");
+        var pa = $(this).closest("div[role=room]");
 
         if (n.attr("role") === "rest") {
             n.remove();
@@ -97,12 +92,16 @@ $(document).ready(function () {
                 p.remove();
             $(this).closest("div[role=on-timeline]").remove();
         }
+
+        $(pa).MoviesTimeLine("update");
     });
 
     $("div[role=time-start] > input").on("input", function () {
-        var a = rtPx($(this).val()) - 7 * 60 * 2;
+        //console.log($(this).val())
+        var a = $(this).val().toMinutes() * 2 - 7 * 60 * 2;
         var w = a > 0 ? a / 2 + 140 : 140;
         $(this).closest("div").css({width: w});
+        $(this).closest("div[role=room]").MoviesTimeLine("update");
     });
 
     $(".btn-NP").on("click", function (e) {

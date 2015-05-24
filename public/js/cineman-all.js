@@ -7,6 +7,17 @@ String.prototype.toMinutes = function () {
 
     return 0;
 };
+Number.prototype.LPad = function () {
+    return this > 9 ? this : "0" + this;
+};
+Number.prototype.minutesTimeFormat = function () {
+    var h = parseInt(this / 60).LPad();
+    var m = (this - h * 60).LPad();
+
+    return h + ":" + m;
+};
+
+
 
 /*functions*/
 (function ($) {
@@ -22,18 +33,39 @@ String.prototype.toMinutes = function () {
                         '<div><img role="m-remove" title="remove" style="margin-left:6px;"><span class="txt-count">...</span></div>' +
                         '<div style="margin-left:6px">' + e.IntTitle + '</div>' +
                         '<div style="margin-left:6px"><span style="margin-right:10px">' + e.Runtime + '</span><span role="format">' + e.Format + '</span></div>' +
-                        '<div role="start-end" style="margin-left:6px">start > end</div>' +
+                        '<div role="start-end" style="margin-left:6px"><span style="background-color:#ff0000;font-weight:bold">...</span><img src="/img/icon-start-end.png"><span>...</span></div>' +
                         '</div>');
             },
             remove: function (e) {
-                //console.log(e.currentTarget)
-                //$(e.currentTarget).closest("div[role=member]").remove()
+                //todo
             },
             update: function () {
-                //console.log($(self).find("div[role=on-timeline],div[role=rest]"))
+                var t = 0, x = 1;
                 $(self).find("div[role=time-start],div[role=on-timeline],div[role=rest]").each(function () {
-                    //console.log($(this))
+
+                    switch ($(this).attr("role")) {
+                        case "time-start":
+                            t = this.childNodes[0].value.toMinutes();
+                            break;
+                        case "on-timeline":
+                            var run = this.childNodes[2].childNodes[0].innerText.toMinutes();
+                            var start = t;
+                            var end = start + run;
+                            
+                            t = end;
+
+                            this.childNodes[0].children[1].innerText = x++;
+
+                            this.childNodes[3].children[0].innerText = start.minutesTimeFormat();
+                            this.childNodes[3].children[2].innerText = t.minutesTimeFormat();
+                            break;
+                        case "rest":
+                            t = t + this.childNodes[0].value.toMinutes();
+                            break;
+                    }
                 });
+
+
             }
         };
 
