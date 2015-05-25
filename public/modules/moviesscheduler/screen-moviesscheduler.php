@@ -7,11 +7,17 @@
         div[role=queue-selected]{color:#fff;height:21px;line-height:21px;margin-right:6px;margin-left:6px;padding-left:6px;padding-right:6px;cursor:pointer;}
         div[role=time-start] > input{width:40px;border:none;text-align:center}
         div[role=on-timeline]{cursor:pointer;color:#fff;}
-        div[role=rest] input{width:40px;border:none;text-align:center;color:#fff;background-color:#999;}
-        img[role=m-remove]{content:url(/img/icon-remove-movie.png);opacity:0.4}
 
+        div[role=rest]{background-color:#999;text-align:center;}
+        div[role=rest] input{width:40px;border:none;text-align:center;color:#fff;background-color:#999;}
+
+        img[role=m-remove]{content:url(/img/icon-remove-movie.png);opacity:0.4}
         .txt-count{font-size:8pt !important;margin-left: 6px}
         .btn-NP{width:21px;height:21px;padding: 0 0 0 0;margin: 0 0 0 0;border: none;cursor:pointer;display:inline-block;background-color:#ccc;text-align:center}
+        .inline > div{float:left}
+        .jqx-input-content{background-color:#ddd; color:#000 !important}
+        .jqx-dropdownlist-content{font-weight: bold; color:#000 !important;}
+        button{cursor:pointer}
     </style>
 
     <div style=""><span style="margin-right:10px">MOVIE</span><span><input id="txt-search" style="border:none;"></span></div>
@@ -56,6 +62,13 @@
     <div style="clear:both;height:24px;"></div>
     <div>SUMMARY : </div>
     <div style="clear:both;height:24px;"></div>
-    <div>APPLY THIS SCHEDULE FROM [ DATE ] AND NEXT [ x ] DAYS</div>
+    <div class="inline" style="line-height:30px">
+        <div>APPLY THIS SCHEDULE FROM</div>
+        <div id="from-date" style="border:none;margin: 0 6px 0 6px;"></div>
+        <div>AND NEXT</div>
+        <div id="days" style="border:none;margin: 0 6px 0 6px;"></div>
+        <div>DAYS</div>
+        <div style="margin: 0 6px 0 6px;"><button>CONFIRM</button></div>
+    </div>
 </div>
 <script src="modules/moviesscheduler/moviesscheduler.js"></script>

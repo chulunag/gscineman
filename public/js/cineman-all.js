@@ -5,7 +5,7 @@ String.prototype.toMinutes = function () {
     if (t[0])
         return t = t.length - 1 ? parseInt(t[0]) * 60 + parseInt(t[1]) : parseInt(t[0]);
 
-    return 0;
+    return parseInt(this);
 };
 Number.prototype.LPad = function () {
     return this > 9 ? this : "0" + this;

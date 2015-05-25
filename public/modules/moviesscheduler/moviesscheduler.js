@@ -32,6 +32,9 @@ $(document).ready(function () {
     $("#_2").scrollToElem();
     $("#_3").scrollToElem();
 
+    $("#from-date").jqxDateTimeInput({width: 100, height: 30, theme: _GLOBAL.theme});
+    $("#days").jqxDropDownList({source: [0, 1, 2, 3, 4, 5, 6], width: 35, height: 30, placeHolder: "-", theme: _GLOBAL.theme});
+
     //events
     $("#txt-search").on("select", function (e) {
         var c = e.args ? e.args.item : null;
@@ -70,8 +73,9 @@ $(document).ready(function () {
 
         var l = $(this).children().last().attr("role");
 
-        if (l !== "time-start")
+        if (l !== "time-start") {
             $(this).append('<div role="rest"><input value="15"></div>');
+        }
 
         $(this).MoviesTimeLine("add", data);
         $(this).MoviesTimeLine("update");
@@ -96,11 +100,17 @@ $(document).ready(function () {
         $(pa).MoviesTimeLine("update");
     });
 
-    $("div[role=time-start] > input").on("input", function () {
-        //console.log($(this).val())
+    $("div[role=time-start] > input").on("change", function () {
         var a = $(this).val().toMinutes() * 2 - 7 * 60 * 2;
         var w = a > 0 ? a / 2 + 140 : 140;
         $(this).closest("div").css({width: w});
+        $(this).closest("div[role=room]").MoviesTimeLine("update");
+    });
+
+    $("div[role=room]").on("change", "div[role=rest]", function () {
+        var a = $(this).children("input").val().toMinutes() * 2 - 15 * 2;
+        var w = a > 0 ? a / 2 + 40 : 40;
+        $(this).css({width: w});
         $(this).closest("div[role=room]").MoviesTimeLine("update");
     });
 
