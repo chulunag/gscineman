@@ -1,4 +1,8 @@
 /*prototype*/
+Date.prototype.toYMDFormat = function () {
+    return this.getFullYear() + "-" + (this.getMonth() + 1).LPad() + "-" + this.getDate();
+    //return this.getMonth();
+};
 String.prototype.toMinutes = function () {
     var t = this.split(":");
 
@@ -17,8 +21,6 @@ Number.prototype.minutesTimeFormat = function () {
     return h + ":" + m;
 };
 
-
-
 /*functions*/
 (function ($) {
     $.fn.MoviesTimeLine = function (o) {
@@ -29,7 +31,7 @@ Number.prototype.minutesTimeFormat = function () {
 
         var m = {
             add: function (e) {
-                $(self).append('<div role="on-timeline" style="background-color:' + e.bg + ';width:' + e.Runtime.toMinutes() * 2 + 'px;">' +
+                $(self).append('<div role="on-timeline" _id="' + e._id + '" style="background-color:' + e.bg + ';width:' + e.Runtime.toMinutes() * 2 + 'px;">' +
                         '<div><img role="m-remove" title="remove" style="margin-left:6px;"><span class="txt-count">...</span></div>' +
                         '<div style="margin-left:6px">' + e.IntTitle + '</div>' +
                         '<div style="margin-left:6px"><span style="margin-right:10px">' + e.Runtime + '</span><span role="format">' + e.Format + '</span></div>' +
@@ -51,7 +53,7 @@ Number.prototype.minutesTimeFormat = function () {
                             var run = this.childNodes[2].childNodes[0].innerText.toMinutes();
                             var start = t;
                             var end = start + run;
-                            
+
                             t = end;
 
                             this.childNodes[0].children[1].innerText = x++;
@@ -124,6 +126,43 @@ Number.prototype.minutesTimeFormat = function () {
 
             if (typeof (arguments[arguments.length - 1]) === 'function')
                 arguments[arguments.length - 1](r);
+        }
+    }
+}(jQuery));
+
+(function ($) {
+    $.moviesqueueColors = ["#66CCCC", "#66CCFF", "#66CC99", "#3366FF", "#990099", "#6633CC", "#669999"];
+    $.fn.MoviesScheduler = function () {
+        var self = this;
+        var methods = {
+            addMovie: function (room, moviesIndex, movie) {
+                $("#" + room.replace("_", "-")).append("<div>" + moviesIndex[movie._id].IntTitle + "</div>")
+            },
+            scheduleRender: function (o) {
+                var data = JSON.parse(o);
+                $.each(data.schedule, function (room) {
+                    $.each(data.schedule[room], function (movie) {
+                        methods.addMovie(room, data.movies, data.schedule[room][movie])
+                    });
+                })
+            }
+        };
+        if (arguments.length) {
+
+            switch (typeof (arguments[0])) {
+                case "string":
+                    switch (arguments[0]) {
+                        case "scheduleRender":
+                            methods.scheduleRender(arguments[1]);
+                            break;
+                    }
+                    break;
+                case "object":
+                    break;
+            }
+
+            if (typeof (arguments[arguments.length - 1]) === "function")
+                arguments[arguments.length - 1]();
         }
     }
 }(jQuery));

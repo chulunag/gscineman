@@ -145,7 +145,7 @@ $(document).ready(
                                     editor.jqxDropDownList({source: new $.jqx.dataAdapter(studios_src), displayMember: "name", autoDropDownHeight: false});
                                 }, width: 200, align: "center"},
                             {text: "Distributor", datafield: "Distributor", columntype: "dropdownlist", createeditor: function (row, value, editor) {
-                                    editor.jqxDropDownList({source: ["CGV", "BHD", "GALAXY CINEMA", "LOTTE CINEMA"], autoDropDownHeight: true});
+                                    editor.jqxDropDownList({source: ["CGV", "BHD", "GALAXY CINEMA", "LOTTE CINEMA", "SAIGON MOVIE MEDIA", "M.V.P BACH KIM"], autoDropDownHeight: true});
                                 }, width: 150, align: "center"},
                             {text: "Restricted"},
                             {text: "Storyline"}

@@ -1,12 +1,19 @@
 $(document).ready(function () {
     var moviesqueueColors = ["#66CCCC", "#66CCFF", "#66CC99", "#3366FF", "#990099", "#6633CC", "#669999"];
 
-    var schedule = [
-        {room: 1, schedule: {}},
-        {room: 2, schedule: {}},
-        {room: 3, schedule: {}}];
+    var schedule = {};
+    $("#movies-scheduler").MoviesScheduler()
+
 
     //functions
+
+    //initialize
+    /* 1. load lich chieu ngay hien tai */
+    $.ajax({type: "post", url: "modules/moviesscheduler/moviesscheduler.php", data: {post: {__action: "get_schedule"}},
+        success: function (r) {
+            $("#movies-scheduler").MoviesScheduler("scheduleRender", r);
+        }
+    });
 
     //components
     $("button").jqxButton({theme: _GLOBAL.theme});
@@ -74,7 +81,7 @@ $(document).ready(function () {
         var l = $(this).children().last().attr("role");
 
         if (l !== "time-start") {
-            $(this).append('<div role="rest"><input value="15"></div>');
+            $(this).append('<div role="rest"><input value="5"></div>');
         }
 
         $(this).MoviesTimeLine("add", data);
@@ -108,7 +115,7 @@ $(document).ready(function () {
     });
 
     $("div[role=room]").on("change", "div[role=rest]", function () {
-        var a = $(this).children("input").val().toMinutes() * 2 - 15 * 2;
+        var a = $(this).children("input").val().toMinutes() * 2 - 5 * 2;
         var w = a > 0 ? a / 2 + 40 : 40;
         $(this).css({width: w});
         $(this).closest("div[role=room]").MoviesTimeLine("update");
@@ -120,5 +127,33 @@ $(document).ready(function () {
         } else {
             $("#_" + $(e.currentTarget).attr("val")).trigger("prev");
         }
+    });
+
+    $("#from-date").on("valueChanged", function (e) {
+        console.log(e.args.date)
+    });
+
+    $("#btn-confirm").click(function () {
+        $("[role=room]").each(function () {
+            var self = this;
+            var on_timeline = [];
+
+            $(self).children("[role=on-timeline]").each(function () {
+                on_timeline.push({_id: $(this).attr("_id"), start: $(this).children("[role=start-end]").children().first().text()})
+            })
+
+            schedule["room_" + $(self).attr("no")] = on_timeline;
+
+        });
+
+        var post = {};
+        post.__action = "apply";
+        post.date = new Date().toYMDFormat();
+        post.schedule = schedule;
+
+        $.ajax({type: "post", url: "modules/moviesscheduler/moviesscheduler.php", data: {post: post},
+            success: function (r) {
+            }
+        });
     });
 });

@@ -4,7 +4,7 @@ include_once $_SERVER ['DOCUMENT_ROOT'] . '/modules/common/class-nosql-database.
 
 $db = new NoSqlDatabase();
 
-$docs = $db->nosql->gsdb->studios->find();
+$docs = $db->nosql->gsdb->studios->find()->sort(['name' => 1]);
 
 $items = [];
 foreach ($docs as $item) {
