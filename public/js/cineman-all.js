@@ -169,7 +169,7 @@ Number.prototype.minutesToTime = function () {
                             found.schedule[i].start = prev.time;
                         } else if (prev.type == "rest") {
                             var movPrev = found.schedule[i - 2];
-                            console.log(movPrev)
+                            found.schedule[i].start = (movPrev.start.toMinutes() + source.moviesIndex[movPrev._id].Runtime.toMinutes() + prev.time.toMinutes()).minutesToTime();
                         }
                     }
                 }
