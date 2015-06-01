@@ -1,7 +1,6 @@
 /*prototype*/
 Date.prototype.toYMDFormat = function () {
-    return this.getFullYear() + "-" + (this.getMonth() + 1).LPad() + "-" + this.getDate();
-    //return this.getMonth();
+    return this.getFullYear() + "-" + (this.getMonth() + 1).LPad() + "-" + this.getDate().LPad();
 };
 String.prototype.toMinutes = function () {
     var t = this.split(":");
@@ -14,7 +13,7 @@ String.prototype.toMinutes = function () {
 Number.prototype.LPad = function () {
     return this > 9 ? this : "0" + this;
 };
-Number.prototype.minutesTimeFormat = function () {
+Number.prototype.minutesToTime = function () {
     var h = parseInt(this / 60).LPad();
     var m = (this - h * 60).LPad();
 
@@ -95,14 +94,13 @@ Number.prototype.minutesTimeFormat = function () {
         var self = this, p;
         var m = {
             add: function (a) {
-                var e = '<div role="queue-selected" draggable="true" data="' + JSON.stringify(a).replace(/"/g, "'") + '" style="background-color:' + a.bg + '">' +
+                var e = '<div role="queue-selected" draggable="true" data="' + JSON.stringify(a).replace(/"/g, "'") + '">' +
                         '<img role="m-remove" title="remove" style="margin-right:6px;"><span>' + a.IntTitle + '</span>' +
                         '</div>';
                 $(self).append(e);
             },
             remove: function (a, b) {
                 var e = $(a.currentTarget).closest("div[role=queue-selected]");
-                b.push(e.css("background-color"));
                 e.remove();
             }
         };
@@ -131,36 +129,127 @@ Number.prototype.minutesTimeFormat = function () {
 }(jQuery));
 
 (function ($) {
-    $.moviesqueueColors = ["#66CCCC", "#66CCFF", "#66CC99", "#3366FF", "#990099", "#6633CC", "#669999"];
+    var movieindexColors = ["#66CCCC", "#66CCFF", "#66CC99", "#3366FF", "#990099", "#6633CC", "#669999"];
+    var source;
     $.fn.MoviesScheduler = function () {
         var self = this;
         var methods = {
-            addMovie: function (room, moviesIndex, movie) {
-                $("#" + room.replace("_", "-")).append("<div>" + moviesIndex[movie._id].IntTitle + "</div>")
+            addMovie: function (room, movie) {
+                $.each(source.schedules, function () {
+                    if (this.room == room) {
+                        var prev = this.schedule[this.schedule.length - 1];
+
+                        if (prev.type == "open")
+                            this.schedule.push({type: "movie", _id: movie._id, start: prev.time});
+                        else {
+                            var lastT = prev.start.toMinutes() + source.moviesIndex[prev._id].Runtime.toMinutes() + 5;
+                            this.schedule.push({type: "rest", time: "00:05"}, {type: "movie", _id: movie._id, start: lastT.minutesToTime()});
+                        }
+                        return;
+                    }
+                });
             },
-            scheduleRender: function (o) {
-                var data = JSON.parse(o);
-                $.each(data.schedule, function (room) {
-                    $.each(data.schedule[room], function (movie) {
-                        methods.addMovie(room, data.movies, data.schedule[room][movie])
+            update: function (type, obj) {
+                if (type === "open") {
+                    var found = methods.findRoom(obj.roomno);
+                    found.schedule[0].time = obj.opentime;
+                } else {
+                    console.log("update for rest")
+                }
+
+                methods.timeReCalc(obj.roomno);
+            },
+            timeReCalc: function (no) {
+                var found = methods.findRoom(no);
+
+                for (var i = 0; i < found.schedule.length; i++) {
+                    if (found.schedule[i].type === "movie") {
+                        var prev = found.schedule[i - 1];
+                        if (prev.type == "open") {
+                            found.schedule[i].start = prev.time;
+                        } else if (prev.type == "rest") {
+                            var movPrev = found.schedule[i - 2];
+                            console.log(movPrev)
+                        }
+                    }
+                }
+            },
+            removeMovie: function () {
+            },
+            appendElem: function (obj) {
+                var mov = source.moviesIndex[obj._id];
+                switch (obj.type) {
+                    case "open":
+                        var t = (obj.time.toMinutes() - 7 * 60) * 2;
+                        var w = t > 0 ? t / 2 + 140 : 140; //7*2*10=140
+                        return '<div role="open" style="width:' + w + 'px"><input value="' + obj.time + '"></div>';
+                        break;
+                    case "movie":
+                        return '<div role="on-timeline" _id="' + obj._id + '" style="width:' + mov.Runtime.toMinutes() * 2 + 'px">' +
+                                '<div><img role="m-remove" title="remove"></div>' +
+                                '<div>' + mov.IntTitle + '</div>' +
+                                '<div><span style="margin-right:10px">' + mov.Runtime + '</span><span role="format">' + mov.Format + '</span></div>' +
+                                '<div role="start-end"><span>' + obj.start + '</span><img src="/img/icon-start-end.png">' +
+                                '<span>' + (obj.start.toMinutes() + mov.Runtime.toMinutes()).minutesToTime() + '</span></div></div>';
+                        break;
+                    case "rest":
+                        return '<div role="rest"><input value="' + obj.time.toMinutes() + '"></div>';
+                        break;
+                }
+            },
+            scheduleRender: function (roomNo) {
+                if (roomNo) {
+                    var found = methods.findRoom(roomNo);
+                    var thisEofRoom = $($(self).find("[role=room][no=" + roomNo + "]")[0]);
+
+                    thisEofRoom.empty();
+                    $.each(found.schedule, function () {
+                        thisEofRoom.append(methods.appendElem(this));
+                        //console.log(this)
                     });
-                })
+                } else {
+                    $.each(source.schedules, function () {
+                        var curRoom = this.room;
+                        $.each(this.schedule, function () {
+                            $($(self).find("[role=room][no=" + curRoom + "]")[0]).append(methods.appendElem(this));
+                        });
+                    });
+                }
+            },
+            findRoom: function (no) {//inner
+                var found;
+
+                for (var n in source.schedules) {
+                    if (source.schedules[n].room == no) {
+                        found = source.schedules[n];
+                    }
+                }
+
+                return found;
             }
         };
         if (arguments.length) {
-
             switch (typeof (arguments[0])) {
                 case "string":
                     switch (arguments[0]) {
                         case "scheduleRender":
                             methods.scheduleRender(arguments[1]);
                             break;
+                        case "addMovie":
+                            methods.addMovie(arguments[1], arguments[2]);
+                            break;
+                        case "update":
+                            methods.update(arguments[1], arguments[2]);
+                            break;
+                        case "getSchedules":
+                            return source.schedules;
+                            break;
                     }
                     break;
                 case "object":
+                    source = arguments[0];
                     break;
             }
-
             if (typeof (arguments[arguments.length - 1]) === "function")
                 arguments[arguments.length - 1]();
         }

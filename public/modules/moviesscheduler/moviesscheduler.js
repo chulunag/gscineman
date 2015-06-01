@@ -1,23 +1,16 @@
 $(document).ready(function () {
-    var moviesqueueColors = ["#66CCCC", "#66CCFF", "#66CC99", "#3366FF", "#990099", "#6633CC", "#669999"];
-
-    var schedule = {};
-    $("#movies-scheduler").MoviesScheduler()
-
-
-    //functions
-
+    var moviesIndex;
     //initialize
-    /* 1. load lich chieu ngay hien tai */
     $.ajax({type: "post", url: "modules/moviesscheduler/moviesscheduler.php", data: {post: {__action: "get_schedule"}},
-        success: function (r) {
-            $("#movies-scheduler").MoviesScheduler("scheduleRender", r);
+        success: function (response) {
+            var obj = JSON.parse(response);
+            moviesIndex = obj.moviesIndex ? obj.moviesIndex : {};
+            $("#movies-scheduler").MoviesScheduler({schedules: obj.schedules, moviesIndex: moviesIndex});
+            $("#movies-scheduler").MoviesScheduler("scheduleRender");
         }
     });
 
     //components
-    $("button").jqxButton({theme: _GLOBAL.theme});
-
     $("#txt-search").jqxInput({placeHolder: "enter movie name", source: function (q, r) {
             var d = new $.jqx.dataAdapter(
                     {type: "post", datatype: "json", datafields: [{name: "IntTitle"}, {name: "Runtime"}], url: "modules/common/movies-list.php"},
@@ -33,126 +26,69 @@ $(document).ready(function () {
                     }));
                 }
             });
-        }, searchMode: "startswithignorecase", width: 280, height: 30, theme: _GLOBAL.theme});
-
-    $("#_1").scrollToElem();
-    $("#_2").scrollToElem();
-    $("#_3").scrollToElem();
-
-    $("#from-date").jqxDateTimeInput({width: 100, height: 30, theme: _GLOBAL.theme});
-    $("#days").jqxDropDownList({source: [0, 1, 2, 3, 4, 5, 6], width: 35, height: 30, placeHolder: "-", theme: _GLOBAL.theme});
+        }, searchMode: "startswithignorecase", width: 280, height: 30, theme: _GLOBAL.theme
+    });
 
     //events
     $("#txt-search").on("select", function (e) {
-        var c = e.args ? e.args.item : null;
+        var selected = e.args ? e.args.item : null;
 
-        if (c) {
-            var data = JSON.parse(c.value);
-            data.bg = moviesqueueColors.pop();
-            $("#movies-queue").MoviesQueue("add", data);
+        if (selected) {
+            var selected = JSON.parse(selected.value);
+
+            if (!moviesIndex[selected._id]) {
+                moviesIndex[selected._id] = {_id: selected._id, IntTitle: selected.IntTitle, Runtime: selected.Runtime, Format: selected.Format}
+            }
+
+            $("#movies-queue").MoviesQueue("add", selected);
         }
-        c = null;
         $("#txt-search").val("");
     });
 
     $("#movies-queue").on("dragstart", "[role=queue-selected]", function (e) {
-        e.originalEvent.dataTransfer.setData("data", e.currentTarget.attributes.data.value);
+        e.originalEvent.dataTransfer.setData("movieData", e.currentTarget.attributes.data.value);
     });
 
     $("div[role=room]").on("dragover", function (e) {
         e.preventDefault();
-        e.currentTarget.style.border = "5px dashed black";
+        $(this).css({border: "5px dashed black"});
     });
 
-    $("div[role=room]").on("dragleave", function (e) {
-        e.preventDefault();
-        e.currentTarget.style.border = "";
+    $("div[role=room]").on("dragleave", function () {
+        $(this).css({border: "none"});
     });
 
     $("#movies-queue").on("click", "[role=m-remove]", function (e) {/* remove movie queue */
         $("#movies-queue").MoviesQueue("remove", e, moviesqueueColors);
     });
 
-    $("div[role=room]").on("drop", function (e) {//xu ly du lieu khi drop
+    $("div[role=room]").on("drop", function (e) {
         e.preventDefault();
         $(this).css({border: "none"});
-        var data = JSON.parse(e.originalEvent.dataTransfer.getData("data").replace(/'/g, '"'));
+        var roomNo = $(this).attr("no");
+        var movieData = JSON.parse(e.originalEvent.dataTransfer.getData("movieData").replace(/'/g, '"'));
 
-        var l = $(this).children().last().attr("role");
-
-        if (l !== "time-start") {
-            $(this).append('<div role="rest"><input value="5"></div>');
-        }
-
-        $(this).MoviesTimeLine("add", data);
-        $(this).MoviesTimeLine("update");
+        $("#movies-scheduler").MoviesScheduler("addMovie", roomNo, movieData);
+        $("#movies-scheduler").MoviesScheduler("scheduleRender", roomNo);
     });
 
-    $("div[role=room]").on("click", "img[role=m-remove]", function () {/* remove movie on timeline */
-        var cls = $(this).closest("div[role=on-timeline]");
-        var n = cls.next();
-        var p = cls.prev();
-        var l = cls.is(":last-child");
-        var pa = $(this).closest("div[role=room]");
-
-        if (n.attr("role") === "rest") {
-            n.remove();
-            $(this).closest("div[role=on-timeline]").remove();
-        } else {
-            if (l && p.attr("role") === "rest")
-                p.remove();
-            $(this).closest("div[role=on-timeline]").remove();
-        }
-
-        $(pa).MoviesTimeLine("update");
+    $("div[role=room]").on("change", "div[role=open] > input", function () {
+        var roomno = $($(this).closest("[role=room]")[0]).attr("no");
+        $("#movies-scheduler").MoviesScheduler("update", "open", {roomno: roomno, opentime: $(this).val()});
+        $("#movies-scheduler").MoviesScheduler("scheduleRender", roomno);
     });
 
-    $("div[role=time-start] > input").on("change", function () {
-        var a = $(this).val().toMinutes() * 2 - 7 * 60 * 2;
-        var w = a > 0 ? a / 2 + 140 : 140;
-        $(this).closest("div").css({width: w});
-        $(this).closest("div[role=room]").MoviesTimeLine("update");
-    });
-
-    $("div[role=room]").on("change", "div[role=rest]", function () {
-        var a = $(this).children("input").val().toMinutes() * 2 - 5 * 2;
-        var w = a > 0 ? a / 2 + 40 : 40;
-        $(this).css({width: w});
-        $(this).closest("div[role=room]").MoviesTimeLine("update");
-    });
-
-    $(".btn-NP").on("click", function (e) {
-        if ($(e.currentTarget).html() === "N") {
-            $("#_" + $(e.currentTarget).attr("val")).trigger("next");
-        } else {
-            $("#_" + $(e.currentTarget).attr("val")).trigger("prev");
-        }
-    });
-
-    $("#from-date").on("valueChanged", function (e) {
-        console.log(e.args.date)
-    });
 
     $("#btn-confirm").click(function () {
-        $("[role=room]").each(function () {
-            var self = this;
-            var on_timeline = [];
-
-            $(self).children("[role=on-timeline]").each(function () {
-                on_timeline.push({_id: $(this).attr("_id"), start: $(this).children("[role=start-end]").children().first().text()})
-            })
-
-            schedule["room_" + $(self).attr("no")] = on_timeline;
-
-        });
 
         var post = {};
         post.__action = "apply";
         post.date = new Date().toYMDFormat();
-        post.schedule = schedule;
+        post.schedules = $("#movies-scheduler").MoviesScheduler("getSchedules");
 
         $.ajax({type: "post", url: "modules/moviesscheduler/moviesscheduler.php", data: {post: post},
             success: function (r) {
+                console.log("Saved!")
             }
         });
     });
